@@ -1,6 +1,9 @@
 # Microsoft.Extensions.Logging.WithProperty
 Extensions methods for adding custom properties to structured logging output
 
+# Installation
+Install-Package XeonApps.Extensions.Logging.WithProperty
+
 # Usage
 
       ILogger logger = loggerFactory.CreateLogger<Program>();
