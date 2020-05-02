@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Microsoft.Extensions.Logging.WithProperty
+namespace XeonApps.Extensions.Logging.WithProperty
 {
   internal class Segment<T> : IReadOnlyList<T> where T : struct
   {

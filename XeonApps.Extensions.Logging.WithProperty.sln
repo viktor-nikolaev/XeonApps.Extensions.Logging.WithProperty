@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Extensions.Logging.WithProperty", "Microsoft.Extensions.Logging.WithProperty\Microsoft.Extensions.Logging.WithProperty.csproj", "{19597F9B-160F-4D27-8703-1193848356B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XeonApps.Extensions.Logging.WithProperty", "XeonApps.Extensions.Logging.WithProperty\XeonApps.Extensions.Logging.WithProperty.csproj", "{19597F9B-160F-4D27-8703-1193848356B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

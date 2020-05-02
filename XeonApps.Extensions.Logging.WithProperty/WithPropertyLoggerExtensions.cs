@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging.WithProperty;
+using XeonApps.Extensions.Logging.WithProperty;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
