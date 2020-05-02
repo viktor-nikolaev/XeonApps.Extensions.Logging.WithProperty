@@ -10,18 +10,32 @@ namespace XeonApps.Extensions.Logging.WithProperty
     private readonly ILogger _logger;
     private readonly Segment<KeyValuePair<string, object>> _segment;
 
-    public WithPropertyLogger(ILogger logger, KeyValuePair<string, object> property)
+    private WithPropertyLogger(ILogger logger, IReadOnlyList<KeyValuePair<string, object>>? properties,
+      KeyValuePair<string, object>? property)
     {
-      _logger = logger;
-      var nextSegment = (logger as WithPropertyLogger)?._segment;
-      _segment = new Segment<KeyValuePair<string, object>>(property, nextSegment);
+      Segment<KeyValuePair<string, object>>? nextSegment;
+      if (logger is WithPropertyLogger withPropertyLogger)
+      {
+        _logger = withPropertyLogger._logger;
+        nextSegment = withPropertyLogger._segment;
+      }
+      else
+      {
+        _logger = logger;
+        nextSegment = null;
+      }
+
+      _segment = new Segment<KeyValuePair<string, object>>(properties, property, nextSegment);
+    }
+
+    public WithPropertyLogger(ILogger logger, KeyValuePair<string, object> property)
+      : this(logger, null, property)
+    {
     }
 
     public WithPropertyLogger(ILogger logger, IReadOnlyList<KeyValuePair<string, object>> properties)
+      : this(logger, properties, null)
     {
-      _logger = logger;
-      var nextSegment = (logger as WithPropertyLogger)?._segment;
-      _segment = new Segment<KeyValuePair<string, object>>(properties, nextSegment);
     }
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,

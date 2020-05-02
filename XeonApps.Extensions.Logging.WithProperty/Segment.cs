@@ -10,7 +10,7 @@ namespace XeonApps.Extensions.Logging.WithProperty
     private readonly IReadOnlyList<T>? _properties;
     private readonly T? _property;
 
-    private Segment(IReadOnlyList<T>? properties, T? property, Segment<T>? next)
+    public Segment(IReadOnlyList<T>? properties, T? property, Segment<T>? next)
     {
       _next = next;
       _properties = properties;
@@ -20,10 +20,6 @@ namespace XeonApps.Extensions.Logging.WithProperty
 
     public Segment(IReadOnlyList<T> properties, Segment<T>? next)
       : this(properties, null, next)
-    {
-    }
-
-    public Segment(T property, Segment<T>? next) : this(null, property, next)
     {
     }
 
