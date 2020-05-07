@@ -19,7 +19,7 @@ namespace XeonApps.Extensions.Logging.WithProperty
     {
       _properties = properties;
       _property = property;
-      _propertiesCount = _properties?.Count ?? 1;
+      _propertiesCount = properties?.Count ?? 1;
 
       if (logger is WithPropertyLogger withPropertyLogger)
       {
