@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.Logging
         throw new ArgumentNullException(nameof(logger));
       }
 
-      return new WithPropertyLogger(logger, new KeyValuePair<string, object>(name, value));
+      return new WithOnePropertyLogger(logger, new KeyValuePair<string, object>(name, value));
     }
 
     public static ILogger WithProperty(this ILogger logger, KeyValuePair<string, object> property)
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Logging
         throw new ArgumentNullException(nameof(logger));
       }
 
-      return new WithPropertyLogger(logger, property);
+      return new WithOnePropertyLogger(logger, property);
     }
 
     public static ILogger WithProperties(this ILogger logger, params KeyValuePair<string, object>[] properties)
@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.Logging
         throw new ArgumentNullException(nameof(properties));
       }
 
-      return new WithPropertyLogger(logger, properties);
+      return new WithManyPropertiesLogger(logger, properties);
     }
 
     public static ILogger WithProperties(this ILogger logger, IReadOnlyList<KeyValuePair<string, object>> properties)
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.Logging
         throw new ArgumentNullException(nameof(properties));
       }
 
-      return new WithPropertyLogger(logger, properties);
+      return new WithManyPropertiesLogger(logger, properties);
     }
 
     public static ILogger WithProperties(this ILogger logger, params (string key, object value)[] properties)
@@ -76,7 +76,7 @@ namespace Microsoft.Extensions.Logging
         array[i] = new KeyValuePair<string, object>(key, value);
       }
 
-      return new WithPropertyLogger(logger, array);
+      return new WithManyPropertiesLogger(logger, array);
     }
   }
 }
