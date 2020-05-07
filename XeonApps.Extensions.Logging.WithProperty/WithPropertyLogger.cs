@@ -78,7 +78,7 @@ namespace XeonApps.Extensions.Logging.WithProperty
     public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
     {
       // it looks like this method is not getting called if we implement IReadOnlyList
-      var next = this;
+      WithPropertyLogger? next = this;
       while (next != null)
       {
         if (next._properties == null)
