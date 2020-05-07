@@ -13,8 +13,6 @@ namespace XeonApps.Extensions.Logging.WithProperty
 
     protected WithPropertyBaseLogger(ILogger logger)
     {
-      _logger = logger;
-
       if (logger is WithPropertyBaseLogger withPropertyBaseLogger)
       {
         _next = withPropertyBaseLogger;
@@ -62,17 +60,13 @@ namespace XeonApps.Extensions.Logging.WithProperty
     public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
     {
       // it looks like this method is not getting called if we implement IReadOnlyList
-      WithPropertyBaseLogger? next = this;
-
-      while (next != null)
+      var result = GetProperties();
+      if (_next != null)
       {
-        foreach (var property in next.GetProperties())
-        {
-          yield return property;
-        }
-
-        next = next._next;
+        result = result.Concat(_next);
       }
+
+      return result.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
