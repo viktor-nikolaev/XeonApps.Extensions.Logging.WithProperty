@@ -1,5 +1,5 @@
 # XeonApps.Extensions.Logging.WithProperty
-Extensions methods for adding custom properties to structured logging output
+Extensions methods for adding custom properties to structured logging output when using Microsoft.Extensions.Logging;
 
 # Installation
 Install-Package XeonApps.Extensions.Logging.WithProperty
@@ -7,6 +7,8 @@ Install-Package XeonApps.Extensions.Logging.WithProperty
 # Usage
 
 ```c#
+using Microsoft.Extensions.Logging.Abstractions; 
+
 ILogger logger = loggerFactory.CreateLogger<Program>();
 
 // inline
