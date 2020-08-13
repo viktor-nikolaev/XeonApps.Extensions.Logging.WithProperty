@@ -35,3 +35,8 @@ logger = logger
 // will have all the added props as well as props from the template 
 logger.LogInformation("Event {Event} happened", "UserLoggedOut");
 ```
+
+# Supported platforms
+
+- NLog
+- Serilog
