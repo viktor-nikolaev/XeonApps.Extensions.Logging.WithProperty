@@ -26,3 +26,4 @@ jobs:
           dotnet nuget push ./XeonApps.Extensions.Logging.WithProperty/out/*.nupkg
           --skip-duplicate --no-symbols true
           --source https://api.nuget.org/v3/index.json
+          -k '${{secrets.NUGET_AUTH_TOKEN}}'
