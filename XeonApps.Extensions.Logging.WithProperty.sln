@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XeonApps.Extensions.Logging.WithProperty", "XeonApps.Extensions.Logging.WithProperty\XeonApps.Extensions.Logging.WithProperty.csproj", "{19597F9B-160F-4D27-8703-1193848356B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XeonApps.Extensions.Logging.WithProperty.Tests", "XeonApps.Extensions.Logging.WithProperty.Tests\XeonApps.Extensions.Logging.WithProperty.Tests.csproj", "{D6E05126-3460-4114-9231-FBF5B82EF62C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -10,7 +12,11 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19597F9B-160F-4D27-8703-1193848356B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19597F9B-160F-4D27-8703-1193848356B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19597F9B-160F-4D27-8703-1193848356B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19597F9B-160F-4D27-8703-1193848356B6}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
+                {19597F9B-160F-4D27-8703-1193848356B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {19597F9B-160F-4D27-8703-1193848356B6}.Release|Any CPU.Build.0 = Release|Any CPU
+                {D6E05126-3460-4114-9231-FBF5B82EF62C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {D6E05126-3460-4114-9231-FBF5B82EF62C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {D6E05126-3460-4114-9231-FBF5B82EF62C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {D6E05126-3460-4114-9231-FBF5B82EF62C}.Release|Any CPU.Build.0 = Release|Any CPU
+        EndGlobalSection
 EndGlobal
