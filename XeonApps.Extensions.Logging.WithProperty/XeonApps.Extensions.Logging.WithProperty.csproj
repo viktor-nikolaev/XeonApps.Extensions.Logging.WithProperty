@@ -8,7 +8,7 @@
             This package allows you to add custom properties to Microsoft's logger when using structured logging
         </Description>
         <PackageTags>logging;structured logging;logger;microsoft</PackageTags>
-        <RepositoryUrl>https://github.com/viktor-nikolaev/Microsoft.Extensions.Logging.WithProperty</RepositoryUrl>
+        <RepositoryUrl>https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty</RepositoryUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <RootNamespace>XeonApps.Extensions.Logging.WithProperty</RootNamespace>
         <LangVersion>latest</LangVersion>
