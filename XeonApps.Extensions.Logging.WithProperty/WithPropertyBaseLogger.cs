@@ -74,7 +74,8 @@ namespace XeonApps.Extensions.Logging.WithProperty
       return GetEnumerator();
     }
 
-    public int Count => PropertiesCount + (_next?.PropertiesCount ?? 0);
+    // include all next loggers when calculating the total count
+    public int Count => PropertiesCount + (_next?.Count ?? 0);
 
     public KeyValuePair<string, object> this[int index]
     {
