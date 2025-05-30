@@ -12,18 +12,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-            fetch-depth: 0
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
       - name: Build solution and generate NuGet package
         run: |
           cd XeonApps.Extensions.Logging.WithProperty
           dotnet pack -c Release -o out
 
-      - name: Push generated package to GitHub registry
+      - name: Push generated package to NuGet registry
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
-        run: >
-          dotnet nuget push ./XeonApps.Extensions.Logging.WithProperty/out/*.nupkg
-          --skip-duplicate --no-symbols true
-          --source https://api.nuget.org/v3/index.json
-          -k '${{secrets.NUGET_AUTH_TOKEN}}'
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
+        run: |
+          dotnet nuget push ./XeonApps.Extensions.Logging.WithProperty/out/*.nupkg \
+            --skip-duplicate --no-symbols \
+            --source https://api.nuget.org/v3/index.json \
+            -k '${{secrets.NUGET_AUTH_TOKEN}}'

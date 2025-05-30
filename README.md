@@ -41,3 +41,6 @@ logger.LogInformation("Event {Event} happened", "UserLoggedOut");
 
 - NLog
 - Serilog
+
+Target frameworks: netstandard2.0, net8.0
+
