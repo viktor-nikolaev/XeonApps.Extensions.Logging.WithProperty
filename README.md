@@ -1,43 +1,40 @@
 # XeonApps.Extensions.Logging.WithProperty
 [![Version](https://img.shields.io/nuget/v/XeonApps.Extensions.Logging.WithProperty)](https://www.nuget.org/packages/XeonApps.Extensions.Logging.WithProperty)
 
-Extension methods for adding custom properties to structured logging output when using Microsoft.Extensions.Logging;
+Lightweight extension methods that attach additional properties to log messages when using `Microsoft.Extensions.Logging`. They help enrich log output with contextual data.
 
-# Installation
+## Installation
+
+```powershell
 Install-Package XeonApps.Extensions.Logging.WithProperty
+```
 
-See [NuGet](https://www.nuget.org/packages/XeonApps.Extensions.Logging.WithProperty/)
+## Usage
 
-# Usage
-
-```c#
-using Microsoft.Extensions.Logging.Abstractions; 
+```csharp
+using Microsoft.Extensions.Logging;
 
 ILogger logger = loggerFactory.CreateLogger<Program>();
 
-// inline
+// Add a property inline
 logger
-  .WithProperty("SomeProp", "value")
-  .LogInformation("User {User} logged in", "Jon");
+    .WithProperty("UserId", "123")
+    .LogInformation("User {User} logged in", "Jon");
 
-// reassign a logger with props
+// Create a logger with predefined properties
 logger = logger
-  .WithProperty("OneProp", 22)
-  .WithProperty("End", 21)
-  .WithProperties(
-    ("key", "value")
-  )
-  .WithProperties(
-    new KeyValuePair<string, object>("another", "one"),
-    new KeyValuePair<string, object>("some", "more"),
-    new KeyValuePair<string, object>("End", "more")
-  );
+    .WithProperty("AppVersion", "1.0")
+    .WithProperties(
+        ("SessionId", Guid.NewGuid()),
+        ("Country", "RU")
+    );
 
-// will have all the added props as well as props from the template 
-logger.LogInformation("Event {Event} happened", "UserLoggedOut");
+// All properties are included in each call
+logger.LogInformation("Event {Event} occurred", "UserLoggedOut");
 ```
 
-# Supported platforms
+## Why use it?
 
-- NLog
-- Serilog
+- Enriches logs with contextual information using concise syntax.
+- Works with NLog and Serilog via the standard logging abstractions.
+- Supports adding single properties or sets of properties at once.
