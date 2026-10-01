@@ -42,16 +42,26 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj
 
-      # Nerdbank.GitVersioning 3.1.91 cannot load PlatformAbstractions in
-      # .NET 6 MSBuild. Use its .NET Framework task host without changing
-      # the package version or bypassing version generation.
+      # Nerdbank.GitVersioning 3.1.91 needs the .NET Framework MSBuild host.
+      # Its GitHub integration also emits the removed set-env command.
+      # Treat only this MSBuild process as a local build: version generation
+      # still runs, but CI variables are not exported. Do not re-enable
+      # unsafe runner commands or modify the release configuration.
       - name: Build with Visual Studio MSBuild
         run: |
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
           $msbuild = & $vswhere -latest -products '*' -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
           if (-not $msbuild) { throw 'Visual Studio MSBuild was not found.' }
-          & $msbuild XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj /t:Build /p:Configuration=Release /nologo /verbosity:minimal
-          exit $LASTEXITCODE
+          $originalGitHubActions = $env:GITHUB_ACTIONS
+          try {
+            $env:GITHUB_ACTIONS = 'false'
+            & $msbuild XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj /t:Build /p:Configuration=Release /nologo /verbosity:minimal
+            $buildExitCode = $LASTEXITCODE
+          }
+          finally {
+            $env:GITHUB_ACTIONS = $originalGitHubActions
+          }
+          exit $buildExitCode
 
       - name: Run tests
         run: dotnet test XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-build --logger "console;verbosity=normal" --logger "trx;LogFileName=tests.trx" --results-directory TestResults
