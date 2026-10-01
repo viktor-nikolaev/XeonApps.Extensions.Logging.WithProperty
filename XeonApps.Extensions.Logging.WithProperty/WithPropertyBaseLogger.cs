@@ -80,6 +80,11 @@ namespace XeonApps.Extensions.Logging.WithProperty
     {
       get
       {
+        if (index < 0)
+        {
+          throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (index < PropertiesCount)
         {
           return GetValueAt(index);

@@ -48,5 +48,82 @@ namespace XeonApps.Extensions.Logging.WithProperty.Tests
 
             Assert.Equal(new[] { "C", "B", "A" }, keys);
         }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
+        public void Indexer_ThrowsForInvalidIndexOnSinglePropertyLogger(int index)
+        {
+            var logger = new DummyLogger().WithProperty("A", 1);
+            var props = Assert.IsAssignableFrom<IReadOnlyList<KeyValuePair<string, object>>>(logger);
+
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => props[index]);
+
+            Assert.Equal("index", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(int.MaxValue)]
+        public void Indexer_ThrowsForInvalidIndexOnNestedLoggers(int index)
+        {
+            var logger = new DummyLogger().WithProperty("A", 1).WithProperty("B", 2).WithProperty("C", 3);
+            var props = Assert.IsAssignableFrom<IReadOnlyList<KeyValuePair<string, object>>>(logger);
+
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => props[index]);
+
+            Assert.Equal("index", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        [InlineData(2)]
+        [InlineData(int.MaxValue)]
+        public void Indexer_ThrowsForInvalidIndexOnArrayBackedLogger(int index)
+        {
+            var logger = new DummyLogger().WithProperties(
+                new KeyValuePair<string, object>("A", 1),
+                new KeyValuePair<string, object>("B", 2));
+            var props = Assert.IsAssignableFrom<IReadOnlyList<KeyValuePair<string, object>>>(logger);
+
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => props[index]);
+
+            Assert.Equal("index", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        [InlineData(0)]
+        [InlineData(int.MaxValue)]
+        public void Indexer_ThrowsForInvalidIndexOnEmptyLogger(int index)
+        {
+            var logger = new DummyLogger().WithProperties(Array.Empty<KeyValuePair<string, object>>());
+            var props = Assert.IsAssignableFrom<IReadOnlyList<KeyValuePair<string, object>>>(logger);
+
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => props[index]);
+
+            Assert.Equal("index", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData(0, "B", 2)]
+        [InlineData(1, "C", 3)]
+        [InlineData(2, "A", 1)]
+        public void Indexer_ReturnsPropertiesAtValidIndicesAcrossMixedLoggers(int index, string key, int value)
+        {
+            var logger = new DummyLogger().WithProperty("A", 1).WithProperties(
+                new KeyValuePair<string, object>("B", 2),
+                new KeyValuePair<string, object>("C", 3));
+            var props = Assert.IsAssignableFrom<IReadOnlyList<KeyValuePair<string, object>>>(logger);
+
+            Assert.Equal(new KeyValuePair<string, object>(key, value), props[index]);
+        }
     }
 }
