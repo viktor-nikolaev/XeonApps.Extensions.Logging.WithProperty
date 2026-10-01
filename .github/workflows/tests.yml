@@ -42,8 +42,16 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj
 
-      - name: Build
-        run: dotnet build XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-restore
+      # Nerdbank.GitVersioning 3.1.91 cannot load PlatformAbstractions in
+      # .NET 6 MSBuild. Use its .NET Framework task host without changing
+      # the package version or bypassing version generation.
+      - name: Build with Visual Studio MSBuild
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $msbuild = & $vswhere -latest -products '*' -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
+          if (-not $msbuild) { throw 'Visual Studio MSBuild was not found.' }
+          & $msbuild XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj /t:Build /p:Configuration=Release /nologo /verbosity:minimal
+          exit $LASTEXITCODE
 
       - name: Run tests
         run: dotnet test XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-build --logger "console;verbosity=normal" --logger "trx;LogFileName=tests.trx" --results-directory TestResults
