@@ -1,0 +1,75 @@
+name: tests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test (.NET 6)
+    runs-on: windows-2022
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - name: Check out the pull request commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the SDK matching the existing test framework
+        run: |
+          '{"sdk":{"version":"6.0.428","rollForward":"disable"}}' | Set-Content -Encoding utf8 global.json
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Show .NET environment
+        run: dotnet --info
+
+      - name: Restore dependencies
+        run: dotnet restore XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj
+
+      # Nerdbank.GitVersioning 3.1.91 needs the .NET Framework MSBuild host.
+      # Its GitHub integration also emits the removed set-env command.
+      # Treat only this MSBuild process as a local build: version generation
+      # still runs, but CI variables are not exported. Do not re-enable
+      # unsafe runner commands or modify the release configuration.
+      - name: Build with Visual Studio MSBuild
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $msbuild = & $vswhere -latest -products '*' -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
+          if (-not $msbuild) { throw 'Visual Studio MSBuild was not found.' }
+          $originalGitHubActions = $env:GITHUB_ACTIONS
+          try {
+            $env:GITHUB_ACTIONS = 'false'
+            & $msbuild XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj /t:Build /p:Configuration=Release /nologo /verbosity:minimal
+            $buildExitCode = $LASTEXITCODE
+          }
+          finally {
+            $env:GITHUB_ACTIONS = $originalGitHubActions
+          }
+          exit $buildExitCode
+
+      - name: Run tests
+        run: dotnet test XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-build --logger "console;verbosity=normal" --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
