@@ -1,0 +1,57 @@
+name: tests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test (.NET 6)
+    runs-on: windows-2022
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - name: Check out the pull request commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the SDK matching the existing test framework
+        run: |
+          '{"sdk":{"version":"6.0.428","rollForward":"disable"}}' | Set-Content -Encoding utf8 global.json
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Show .NET environment
+        run: dotnet --info
+
+      - name: Restore dependencies
+        run: dotnet restore XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj
+
+      - name: Build
+        run: dotnet build XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test XeonApps.Extensions.Logging.WithProperty.Tests/XeonApps.Extensions.Logging.WithProperty.Tests.csproj --configuration Release --no-build --logger "console;verbosity=normal" --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
