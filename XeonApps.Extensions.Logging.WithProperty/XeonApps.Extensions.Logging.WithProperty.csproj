@@ -1,23 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <PackageId>XeonApps.Extensions.Logging.WithProperty</PackageId>
-        <Authors>Viktor Nikolaev</Authors>
-        <Description>
-            This package allows you to add custom properties to Microsoft's logger when using structured logging
-        </Description>
-        <PackageTags>logging;structured logging;logger;microsoft</PackageTags>
-        <RepositoryUrl>https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty</RepositoryUrl>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <RootNamespace>XeonApps.Extensions.Logging.WithProperty</RootNamespace>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
-        <PackageReference Include="Nerdbank.GitVersioning" Version="3.1.91" PrivateAssets="all" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>XeonApps.Extensions.Logging.WithProperty</PackageId>
+    <Authors>Viktor Nikolaev</Authors>
+    <Description>Add contextual properties to Microsoft.Extensions.Logging structured log events without changing their message templates.</Description>
+    <PackageTags>logging;structured-logging;logger;microsoft</PackageTags>
+    <RepositoryUrl>https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>XeonApps.Extensions.Logging.WithProperty</RootNamespace>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <!-- Keep the assembly identity used by the 1.2 release line. -->
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DebugType>portable</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- Source Link is included in the .NET 10 SDK; no extra build package is needed. -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.2.7</PackageValidationBaselineVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- This is a minimum, not a pin to 1.x. Do not raise the consumer dependency
+         floor just to update build tooling. CI also exercises modern abstractions. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
+    <None Include="../README.md" Pack="true" PackagePath="/" />
+    <None Include="../LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
 </Project>

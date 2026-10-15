@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns: ['*']
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      test-tooling:
+        patterns: ['Microsoft.Testing.*', 'xunit*']
+    # Updating this minimum can break existing consumers. Review it separately.
+    ignore:
+      - dependency-name: Microsoft.Extensions.Logging.Abstractions

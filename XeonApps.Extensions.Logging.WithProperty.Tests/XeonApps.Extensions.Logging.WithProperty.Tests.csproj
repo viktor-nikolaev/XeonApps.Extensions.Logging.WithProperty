@@ -1,16 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageReference Include="xunit.v3.mtp-v2" Version="4.0.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.1" PrivateAssets="all" />
+    <!-- Exercise the abstraction shipped with each runtime, not just the 1.x minimum. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\XeonApps.Extensions.Logging.WithProperty\XeonApps.Extensions.Logging.WithProperty.csproj" />
+  <ItemGroup Condition="'$(UsePackageUnderTest)' != 'true'">
+    <ProjectReference Include="../XeonApps.Extensions.Logging.WithProperty/XeonApps.Extensions.Logging.WithProperty.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="'$(UsePackageUnderTest)' == 'true'">
+    <PackageReference Include="XeonApps.Extensions.Logging.WithProperty" Version="[$(Version)]" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(UsePackageUnderTest)' == 'true'">
+    <RestoreAdditionalProjectSources>$(MSBuildThisFileDirectory)../artifacts/packages;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
+  </PropertyGroup>
 </Project>
