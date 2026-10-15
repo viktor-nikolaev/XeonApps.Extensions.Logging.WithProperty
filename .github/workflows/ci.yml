@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+      - run: dotnet --info
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore --warnaserror
+      - run: dotnet test --configuration Release --no-build --no-restore --logger "trx;LogFilePrefix=tests" --results-directory artifacts/test-results
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tests-${{ matrix.os }}
+          path: artifacts/test-results/**/*.trx
+          if-no-files-found: warn
+          retention-days: 14
+
+  package:
+    name: Package and consumer tests
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+      - name: Pack and validate public API against 1.2.7
+        run: dotnet pack XeonApps.Extensions.Logging.WithProperty --configuration Release --output artifacts/packages --warnaserror
+      - name: Inspect NuGet and symbol packages
+        run: python3 eng/verify-package.py artifacts/packages --commit "$(git rev-parse HEAD)"
+      - name: Run the full suite against the packaged DLL, not a project reference
+        env:
+          NUGET_PACKAGES: ${{ runner.temp }}/package-consumer-cache
+        run: dotnet test XeonApps.Extensions.Logging.WithProperty.Tests --configuration Release -p:UsePackageUnderTest=true --logger "trx;LogFilePrefix=package" --results-directory artifacts/package-test-results
+      - name: Upload consumer test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package-tests
+          path: artifacts/package-test-results/**/*.trx
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Save the tested packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+          if-no-files-found: error
+          retention-days: 14

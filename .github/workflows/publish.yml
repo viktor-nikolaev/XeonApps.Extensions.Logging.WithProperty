@@ -1,29 +1,73 @@
-name: publish to nuget
+name: Publish to NuGet
+
 on:
   push:
-    branches:
-      - master
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
+  validate-release:
     runs-on: ubuntu-latest
-    name: Update NuGet package
+    timeout-minutes: 5
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-            fetch-depth: 0
-
-      - name: Build solution and generate NuGet package
-        run: |
-          cd XeonApps.Extensions.Logging.WithProperty
-          dotnet pack -c Release -o out
-
-      - name: Push generated package to GitHub registry
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require a version-matching tag on master history
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
-        run: >
-          dotnet nuget push ./XeonApps.Extensions.Logging.WithProperty/out/*.nupkg
-          --skip-duplicate --no-symbols true
-          --source https://api.nuget.org/v3/index.json
-          -k '${{secrets.NUGET_AUTH_TOKEN}}'
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 eng/verify-package.py --tag "$RELEASE_TAG"
+          git merge-base --is-ancestor HEAD origin/master
+
+  verify:
+    needs: validate-release
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  publish:
+    name: Publish the tested artifacts
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: nuget
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: nuget-packages
+          path: artifacts/packages
+      - name: Recheck artifact identity before requesting credentials
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          test -n "$NUGET_USER" || { echo 'Set the NUGET_USER variable to the owning nuget.org profile name.'; exit 1; }
+          python3 eng/verify-package.py artifacts/packages --commit "$(git rev-parse HEAD)" --tag "$RELEASE_TAG"
+      - name: Obtain a short-lived NuGet publishing key
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+      - name: Push package and its matching symbol package
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push artifacts/packages/*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
