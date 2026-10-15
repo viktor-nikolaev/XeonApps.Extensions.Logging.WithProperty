@@ -14,7 +14,7 @@ This release line includes the previously unreleased nested-property count and e
 - Include a NuGet README, license, XML API docs, repository commit metadata, Source Link and portable symbols.
 - Replace push-to-master API-key publication with explicit versioned release tags, environment approval and NuGet Trusted Publishing. Pin GitHub Actions and add monthly dependency update PRs.
 
-See `docs/RELEASING.md` for the one-time publisher setup. Issue #12 remains a publication request until the new package is actually available from nuget.org.
+Published to [nuget.org](https://www.nuget.org/packages/XeonApps.Extensions.Logging.WithProperty/1.3.0), resolving issue #12. See `docs/RELEASING.md` for the release process.
 
 ## 1.2.7 — 2020-09-29
 
