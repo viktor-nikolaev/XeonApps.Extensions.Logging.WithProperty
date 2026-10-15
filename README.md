@@ -51,7 +51,7 @@ Array and `IReadOnlyList` overloads retain the supplied collection without copyi
 
 ## Build and test
 
-Install a stable **.NET 10 SDK** and the .NET/ASP.NET Core runtimes for **8, 9, and 10** (installing each corresponding SDK is sufficient). `global.json` selects the .NET 10 SDK and Microsoft.Testing.Platform. The tests use xUnit.net v3 with the MTP v2 integration, not the legacy VSTest adapter.
+Install a stable **.NET 10 SDK** and the .NET/ASP.NET Core runtimes for **8, 9, and 10** (installing each corresponding SDK is sufficient). `global.json` selects the .NET 10 SDK and Microsoft.Testing.Platform. The tests use xUnit.net v3 with the MTP v2 integration, not the legacy VSTest adapter. Python 3.10 or later is needed only for the package-validation scripts, not to consume the library.
 
 ```shell
 dotnet restore
@@ -67,8 +67,8 @@ CI additionally restores the freshly packed package into an isolated NuGet cache
 
 ## Releases
 
-The next prepared version is **1.3.0**; a source change or merged PR is not itself a NuGet publication. Package versions are declared in `Directory.Build.props`.
+Package versions are declared in `Directory.Build.props`. The NuGet badge links to published versions; a source change or merged PR is not itself a NuGet publication.
 
 Publication is deliberately separate from ordinary branch builds. A version-matching `v*` tag on `master` history triggers CI again; only its verified package artifacts can proceed through the `nuget` environment and NuGet Trusted Publishing. No permanent NuGet API key is stored by this workflow.
 
-See [the release checklist](docs/RELEASING.md) for the one-time account setup, release commands, and recovery steps, and [the changelog](CHANGELOG.md) for the prepared changes.
+See [the release checklist](https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty/blob/master/docs/RELEASING.md) for the one-time account setup, release commands, and recovery steps, and [the changelog](https://github.com/viktor-nikolaev/XeonApps.Extensions.Logging.WithProperty/blob/master/CHANGELOG.md) for changes.
