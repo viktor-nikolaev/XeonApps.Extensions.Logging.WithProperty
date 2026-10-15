@@ -15,7 +15,7 @@ updates:
     open-pull-requests-limit: 3
     groups:
       test-tooling:
-        patterns: ['Microsoft.NET.Test.Sdk', 'xunit*']
+        patterns: ['Microsoft.Testing.*', 'xunit*']
     # Updating this minimum can break existing consumers. Review it separately.
     ignore:
       - dependency-name: Microsoft.Extensions.Logging.Abstractions
