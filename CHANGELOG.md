@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0 — prepared, not yet published
+## 1.3.0 — 2026-10-15
 
 This release line includes the previously unreleased nested-property count and enumeration fixes already on `master`, plus the following changes:
 
