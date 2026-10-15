@@ -13,7 +13,7 @@ These account settings are **not configured by merging this repository**. They r
 1. Sign in to the nuget.org profile that owns `XeonApps.Extensions.Logging.WithProperty`. Its public package page currently lists **`veikedo`** as owner. Verify that this is your intended publishing profile; a GitHub login or email address is not a substitute for a NuGet profile name.
 2. In GitHub **Settings > Environments**, create an environment named **`nuget`**. Configure required reviewer approval where available and restrict deployments to release tags matching **`v*`**. Protect `master` and restrict creation/update/deletion of release tags to maintainers using repository rulesets. These controls are recommended administrative settings, not changes this PR has applied.
 3. Add an environment variable or repository Actions variable named **`NUGET_USER`**, with the owning NuGet profile name (for the current owner, `veikedo`). This is a non-secret account identifier, not an API key. The publishing job fails before login if it is missing.
-4. In nuget.org **Manage account > Trusted Publishing**, create a GitHub policy with the following exact values:
+4. In nuget.org **Manage account > Trusted Publishing**, create a GitHub policy with the following values:
 
    | Field | Value |
    | --- | --- |
@@ -57,7 +57,7 @@ Keep package API validation enabled. When intentionally changing the baseline ve
 
 A rejected tag/version or ancestry check requires correcting the release preparation; do not bypass the check. A failed test or package validation must be fixed before publishing.
 
-For authentication failures, compare the NuGet policy's repository owner, repository, **workflow filename**, environment and package owner with the workflow and `NUGET_USER`. The environment name is case-sensitive. An API key fallback is intentionally not provided.
+For authentication failures, compare the NuGet policy's repository owner, repository, **workflow filename**, environment and package owner with the workflow and `NUGET_USER`. Keep the configured values aligned. An API key fallback is intentionally not provided.
 
 A failed final publishing job can be rerun from the same workflow run after fixing external configuration, while its tested artifact is retained (14 days). `--skip-duplicate` makes retries of an already accepted package non-destructive. Confirm both package and symbol publication in the job output. If artifacts have expired, rerun all jobs to reproduce and revalidate them; do not upload an untested local replacement.
 
